@@ -1,95 +1,51 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+
+import { getPublicFeed } from './lib/functions'
+import { useEffect, useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import styles from './page.module.css'
 
 export default function Home() {
+  const [feeds, setFeeds] = useState<any[]>([])
+  const [searchQuery, setSearchQuery] = useState<string>('')
+
+  const fetchFeeds = async () => {
+    const feeds: any[] = await getPublicFeed(searchQuery)
+    setFeeds(feeds)
+  }
+
+  const handleSearch = () => {
+    fetchFeeds()
+  }
+
+  useEffect(() => {
+    fetchFeeds()
+  }, [])
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className='container py-3'>
+      <div className='row'>
+        <div className='input-group'>
+          <input className='form-control' type='text' placeholder='Enter image tag' onChange={(e) => setSearchQuery(e.target.value)}></input>
+          <button className='btn btn-primary' onClick={handleSearch}>Search</button>
         </div>
       </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className='row row-cols-1 row-cols-md-3'>
+        {feeds.map(function (entry: any, i: any) {
+          return (
+            <div className='col gy-4'>
+              <div className='card h-100'>
+                <img src={entry.link} className={['card-img-top', styles.cardImgFit].join(" ")} alt='...'></img>
+                <div className='card-body'>
+                  <h5 className='card-title text-truncate'>{entry.title}</h5>
+                  <a href={entry.link} className='btn btn-primary'>View Image</a>
+                </div>
+              </div>
+            </div>
+          )
+        })}
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </div>
   );
 }
