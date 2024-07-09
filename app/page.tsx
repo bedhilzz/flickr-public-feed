@@ -1,6 +1,5 @@
 'use client'
 
-import { getPublicFeed } from './lib/functions'
 import { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import styles from './page.module.css'
@@ -10,7 +9,9 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<string>('')
 
   const fetchFeeds = async () => {
-    const feeds: any[] = await getPublicFeed(searchQuery)
+    const params: URLSearchParams = new URLSearchParams({image_tag: searchQuery})
+    const response: Response = await fetch(`/api/public_feed?${params}`)
+    const feeds: any[] = await response.json()
     setFeeds(feeds)
   }
 
@@ -32,7 +33,7 @@ export default function Home() {
       </div>
 
       <div className='row row-cols-1 row-cols-md-3'>
-        {feeds.map(function (entry: any, i: any) {
+        {feeds.map(function (entry: any, _: any) {
           return (
             <div className='col gy-4'>
               <div className='card h-100'>
